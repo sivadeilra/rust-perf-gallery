@@ -17,16 +17,15 @@ pub static PRIMES_256: [u32; 256] = [
     1619,
 ];
 
+/// The first 16 primes
 pub static PRIMES_16: [u32; 16] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53];
 
+/// The first 7 primes
 pub static PRIMES_7: [u32; 7] = [2, 3, 5, 7, 11, 13, 17];
 
+/// Naive implementation: bounds check + panic BB
 pub fn lookup_16_naive(i: usize) -> u32 {
     PRIMES_16[i]
-}
-
-pub fn lookup_16_masked(i: usize) -> u32 {
-    PRIMES_16[i & 0xf]
 }
 
 pub fn lookup_16_assert_bound(i: usize) -> u32 {
@@ -34,10 +33,24 @@ pub fn lookup_16_assert_bound(i: usize) -> u32 {
     PRIMES_16[i]
 }
 
+/// Slightly smarter: The mask operator allows the compiler to understand that the range of the
+/// array index is constrained to 0..16, and so the bounds check is eliminated.
+pub fn lookup_16_masked(i: usize) -> u32 {
+    PRIMES_16[i & 0xf]
+}
+
+/// Slightly smarter: The modulus operator allows the compiler to understand that the range of the
+/// array index is constrained to 0..16, and so the bounds check is eliminated.
+pub fn lookup_16_modulus(i: usize) -> u32 {
+    PRIMES_16[i % 16]
+}
+
 pub fn lookup_256_naive(i: usize) -> u32 {
     PRIMES_256[i]
 }
 
+/// Compiler understands that the range of `i` cannot exceed the size of the array, and so no
+/// bounds check is generated.
 pub fn lookup_256_u8(i: u8) -> u32 {
     PRIMES_256[usize::from(i)]
 }
@@ -54,9 +67,22 @@ pub fn lookup_7_naive(i: usize) -> u32 {
     PRIMES_7[i]
 }
 
+/// Modulus operator allows compiler to eliminate bounds check. However, because the divisor is not
+/// a power of w, it is a bit more costly. For certain constant divisors, Rust generates a sequence
+/// of lower-cost ops (subtract, shift, add).
+/// 
+/// Whether the modulus or the bounds check is more costly will be usage-dependent.
 pub fn lookup_7_modulus(i: usize) -> u32 {
     PRIMES_7[i % 7]
 }
+
+// These next samples are about double indirection through tables. A dynamic index `i` is used to
+// look up a value in a static table, and the result of that lookup is used to index another table.
+// This is common in C code, such as image decoders.
+//
+// The ultimate goal is to have a compiler that can observe that the range of the values on the
+// first table lies within the index range of the second table. However, Rust does not currently
+// do this.
 
 // These indices are meaningless, but they are all legal indices into PRIMES_7.
 pub static INDIRECT_LOOKUP_TABLE: [usize; 8] = [1, 3, 5, 1, 2, 6, 2, 4];
@@ -70,4 +96,3 @@ pub fn lookup_7_indirect_mask_naive(i: usize) -> u32 {
     let j = INDIRECT_LOOKUP_TABLE[i & 7];
     PRIMES_7[j]
 }
-
