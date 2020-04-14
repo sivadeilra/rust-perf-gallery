@@ -70,7 +70,7 @@ pub fn lookup_7_naive(i: usize) -> u32 {
 /// Modulus operator allows compiler to eliminate bounds check. However, because the divisor is not
 /// a power of w, it is a bit more costly. For certain constant divisors, Rust generates a sequence
 /// of lower-cost ops (subtract, shift, add).
-/// 
+///
 /// Whether the modulus or the bounds check is more costly will be usage-dependent.
 pub fn lookup_7_modulus(i: usize) -> u32 {
     PRIMES_7[i % 7]

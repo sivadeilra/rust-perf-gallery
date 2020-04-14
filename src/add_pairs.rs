@@ -1,4 +1,3 @@
-
 pub fn add_pairs_naive_using_input_len(pairs: &[u32], sums: &mut [u32]) {
     for i in 0..pairs.len() / 2 {
         sums[i] = pairs[i * 2] + pairs[i * 2 + 1];
@@ -117,4 +116,3 @@ pub fn sum_pairs_product_chunks(s: &mut [u32]) -> u32 {
 pub fn sum_pairs_product_chunks_exact(s: &mut [u32]) -> u32 {
     s.chunks_exact(2).map(|pair| pair[0] * pair[1]).sum()
 }
-

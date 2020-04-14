@@ -17,7 +17,7 @@ pub fn add_two_slices_naive_output_dependent(a: &[u32], b: &[u32], sum: &mut [u3
 
 /// Slightly smarter implementation.  `assert_eq` allows the compiler to elide all of the bounds
 /// checks within the loop; the bounds checks are hoisted above the loop.
-/// 
+///
 /// `assert_eq` generates quite verbose code; the panic blocks are longer than the main body.
 pub fn add_two_slices_assert_eq(a: &[u32], b: &[u32], sum: &mut [u32]) {
     assert_eq!(a.len(), b.len());
@@ -38,10 +38,10 @@ pub fn add_two_slices_assert2(a: &[u32], b: &[u32], sum: &mut [u32]) {
 }
 
 /// Idiomatic Rust implemntation, using `zip` and iterators. All bounds checks are eliminated.
-/// 
+///
 /// The loop optimizer generates SIMD vector code for this, unrolling 8 elements per loop iteration.
 /// This is better code than most humans could write by hand.
-/// 
+///
 /// TODO: Why does the loop vectorizer work on this loop, but not on `add_two_slices_assert2`?
 /// In both cases, the compiler should have the same information.
 pub fn add_two_slices_zip(a: &[u32], b: &[u32], sum: &mut [u32]) {
@@ -49,4 +49,3 @@ pub fn add_two_slices_zip(a: &[u32], b: &[u32], sum: &mut [u32]) {
         *sum_item = *a_item + *b_item;
     }
 }
-
