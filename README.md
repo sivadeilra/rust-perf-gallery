@@ -74,6 +74,62 @@ _ZN3lib14add_two_slices22add_two_slices_assert217hde3f69c9e28afb9dE:
 	ud2
 ```
 
+You can also use [`cargo-asm`](https://github.com/gnzlbg/cargo-asm). Install it once by using:
+
+```bash
+cargo install cargo-asm
+```
+
+Then run `cargo asm ...` to generate annotated assembly. For example:
+
+```bash
+cargo asm --rust rust_perf_gallery::add_two_slices::add_two_slices_assert2
+```
+
+produces:
+
+```
+ pub fn add_two_slices_assert2(a: &[u32], b: &[u32], sum: &mut [u32]) {
+ sub     rsp, 40
+ assert!(a.len() == b.len() && a.len() == sum.len());
+ cmp     rdx, r9
+ jne     .LBB25_7
+ cmp     rdx, qword, ptr, [rsp, +, 88]
+ jne     .LBB25_7
+     test    rdx, rdx
+     je      .LBB25_6
+     mov     r9, qword, ptr, [rsp, +, 80]
+     xor     r10d, r10d
+.LBB25_4:
+ sum[i] = a[i] + b[i];
+ cmp     rdx, r10
+ je      .LBB25_8
+ mov     eax, dword, ptr, [r8, +, 4*r10]
+ add     eax, dword, ptr, [rcx, +, 4*r10]
+ mov     dword, ptr, [r9, +, 4*r10], eax
+ add     r10, 1
+     cmp     rdx, r10
+     jne     .LBB25_4
+.LBB25_6:
+ }
+ add     rsp, 40
+ ret
+.LBB25_8:
+ sum[i] = a[i] + b[i];
+ lea     rcx, [rip, +, anon.62f3ca25941a6d03c8cea665bd631ea4.49]
+ mov     r8, rdx
+ call    core::panicking::panic_bounds_check
+ ud2
+.LBB25_7:
+ assert!(a.len() == b.len() && a.len() == sum.len());
+ lea     rcx, [rip, +, anon.62f3ca25941a6d03c8cea665bd631ea4.47]
+ lea     r8, [rip, +, anon.62f3ca25941a6d03c8cea665bd631ea4.48]
+ mov     edx, 60
+ call    std::panicking::begin_panic
+ ud2
+```
+
+
 ## Submit PRs for your own examples
 
 If you have an interesting set of examples, feel free to add a new module and submit a PR
